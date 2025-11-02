@@ -289,5 +289,13 @@ if __name__ == "__main__":
         log_level="info"
     )
 
+@app.get("/debug/oauth_redirect")
+async def debug_redirect_uri():
+    from app.config import settings
+    redirect_uri = f"{settings.BASE_URL}/auth/google/callback"
+    return {"redirect_uri": redirect_uri}
+
+
+
 
 
