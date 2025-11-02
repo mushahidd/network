@@ -275,17 +275,12 @@ import os
 import uvicorn
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))  # Railway sets $PORT automatically
-    host = "0.0.0.0"  # Must be 0.0.0.0 for container deployment
-    print("="*60)
-    print(f"🚀 Starting ConnectHub server at http://{host}:{port}")
-    print("="*60)
-    
+    import uvicorn
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run(
         "app.main:app",
-        host=host,
+        host="0.0.0.0",
         port=port,
-        reload=False,
         log_level="info"
     )
 
@@ -305,6 +300,7 @@ async def auth_callback(request: Request):
     user = token.get("userinfo")
     # Handle user authentication
     return RedirectResponse(url="/dashboard")
+
 
 
 
