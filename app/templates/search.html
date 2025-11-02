@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Search - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">Search</h1>
+    
+    <!-- Search Bar -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <form method="get" class="space-y-4">
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search businesses, professionals, skills..." 
+                        value="{{ query }}"
+                        class="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    class="px-8 py-4 gradient-bg text-white rounded-lg hover:opacity-90 transition"
+                >
+                    Search
+                </button>
+            </div>
+            
+            <!-- Filters -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                    <select 
+                        name="type" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                    >
+                        <option value="all" {% if type == "all" or not type %}selected{% endif %}>All</option>
+                        <option value="businesses" {% if type == "businesses" %}selected{% endif %}>Businesses</option>
+                        <option value="professionals" {% if type == "professionals" %}selected{% endif %}>Professionals</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category (Businesses)</label>
+                    <select 
+                        name="category" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                    >
+                        <option value="">All Categories</option>
+                        <option value="Technology" {% if category == "Technology" %}selected{% endif %}>Technology</option>
+                        <option value="Marketing" {% if category == "Marketing" %}selected{% endif %}>Marketing</option>
+                        <option value="Finance" {% if category == "Finance" %}selected{% endif %}>Finance</option>
+                        <option value="Healthcare" {% if category == "Healthcare" %}selected{% endif %}>Healthcare</option>
+                        <option value="Education" {% if category == "Education" %}selected{% endif %}>Education</option>
+                        <option value="Other" {% if category == "Other" %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Skill (Professionals)</label>
+                    <input 
+                        type="text" 
+                        name="skill" 
+                        placeholder="e.g., Python, Design..." 
+                        value="{{ skill or '' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    >
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Results -->
+    {% if query %}
+    <div class="mb-6">
+        <p class="text-gray-600">
+            Found <strong>{{ total_results }}</strong> result{{ 's' if total_results != 1 else '' }}
+            {% if total_businesses > 0 and total_professionals > 0 %}
+            ({{ total_businesses }} business{{ 'es' if total_businesses != 1 else '' }}, {{ total_professionals }} professional{{ 's' if total_professionals != 1 else '' }})
+            {% endif %}
+            for "<strong>{{ query }}</strong>"
+        </p>
+    </div>
+    {% endif %}
+    
+    <!-- Business Results -->
+    {% if businesses %}
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Businesses ({{ total_businesses }})</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for business in businesses %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                {% if business.cover_image_url %}
+                <div class="h-32 bg-cover bg-center" style="background-image: url('{{ business.cover_image_url }}')"></div>
+                {% else %}
+                <div class="h-32 gradient-bg"></div>
+                {% endif %}
+                <div class="p-6">
+                    {% if business.logo_url %}
+                    <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-16 h-16 rounded-lg mb-4 -mt-12 bg-white p-2">
+                    {% endif %}
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ business.business_name }}</h3>
+                    <p class="text-gray-600 mb-3">{{ business.tagline }}</p>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">{{ business.category_value or (business.category.value if business.category else 'Other') }}</span>
+                        <span class="text-sm text-gray-500">{{ business.location or 'No location' }}</span>
+                    </div>
+                    <a href="/business/{{ business.slug }}" class="text-purple-600 hover:text-purple-800 font-medium">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Professional Results -->
+    {% if professionals %}
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Professionals ({{ total_professionals }})</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for professional in professionals %}
+            <div class="bg-white rounded-xl shadow-md p-6 text-center card-hover">
+                {% if professional.user.profile_picture_url %}
+                <img 
+                    src="{{ professional.user.profile_picture_url }}" 
+                    alt="{{ professional.full_name }}" 
+                    class="w-20 h-20 rounded-full mx-auto mb-4"
+                >
+                {% else %}
+                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                    {{ professional.full_name[0] }}
+                </div>
+                {% endif %}
+                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ professional.full_name }}</h3>
+                <p class="text-sm text-gray-600 mb-3">{{ professional.headline }}</p>
+                
+                {% if professional.skills %}
+                <div class="flex flex-wrap gap-1 justify-center mb-4">
+                    {% for skill_item in professional.skills[:3] %}
+                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">{{ skill_item }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <a href="/profile/{{ professional.slug }}" class="text-purple-600 hover:text-purple-800 font-medium text-sm">
+                    View Profile →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Empty State -->
+    {% if not businesses and not professionals %}
+    <div class="bg-white rounded-xl shadow-md p-12 text-center">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">No results found</h2>
+        <p class="text-gray-600 mb-6">
+            {% if query %}
+            Try different keywords or filters to find what you're looking for.
+            {% else %}
+            Enter a search term to get started.
+            {% endif %}
+        </p>
+        <div class="flex gap-4 justify-center">
+            <a href="/businesses" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                Browse Businesses
+            </a>
+            <a href="/professionals" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                Browse Professionals
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="flex justify-center gap-2 mt-8">
+        {% if page > 1 %}
+        <a 
+            href="?q={{ query }}&type={{ type }}{% if category %}&category={{ category }}{% endif %}{% if skill %}&skill={{ skill }}{% endif %}&page={{ page - 1 }}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            Previous
+        </a>
+        {% endif %}
+        
+        {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ p }}</span>
+        {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+        <a 
+            href="?q={{ query }}&type={{ type }}{% if category %}&category={{ category }}{% endif %}{% if skill %}&skill={{ skill }}{% endif %}&page={{ p }}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            {{ p }}
+        </a>
+        {% elif p == page - 3 or p == page + 3 %}
+        <span class="px-4 py-2">...</span>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page < total_pages %}
+        <a 
+            href="?q={{ query }}&type={{ type }}{% if category %}&category={{ category }}{% endif %}{% if skill %}&skill={{ skill }}{% endif %}&page={{ page + 1 }}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            Next
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

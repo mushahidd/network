@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Section -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, {{ user.display_name }}! 👋</h2>
+        <p class="text-gray-600">Here's what's happening in your network today.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl">👥</div>
+                        <span class="text-green-500 text-sm font-medium">+12%</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800">{{ stats.connections }}</div>
+                    <div class="text-sm text-gray-600">Connections</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl">👁️</div>
+                        <span class="text-blue-500 text-sm font-medium">+8%</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800">{{ stats.profile_views }}</div>
+                    <div class="text-sm text-gray-600">Profile Views</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl">💬</div>
+                        <span class="text-purple-500 text-sm font-medium">+5</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800">{{ stats.messages }}</div>
+                    <div class="text-sm text-gray-600">Messages</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="/dashboard/business/new" class="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition text-center">
+                        <div class="text-2xl mb-2">🏢</div>
+                        <div class="text-sm font-medium text-gray-700">Add Business</div>
+                    </a>
+                    <a href="/dashboard/profile/edit" class="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition text-center">
+                        <div class="text-2xl mb-2">👤</div>
+                        <div class="text-sm font-medium text-gray-700">Edit Profile</div>
+                    </a>
+                    <a href="/search" class="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition text-center">
+                        <div class="text-2xl mb-2">🔍</div>
+                        <div class="text-sm font-medium text-gray-700">Find People</div>
+                    </a>
+                    <a href="/businesses" class="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition text-center">
+                        <div class="text-2xl mb-2">🏢</div>
+                        <div class="text-sm font-medium text-gray-700">Browse Businesses</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- My Listings -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">My Listings</h3>
+                <div class="space-y-4">
+                    {% if businesses %}
+                    {% for business in businesses %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-4">
+                            {% if business.logo_url %}
+                            <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-12 h-12 rounded-lg">
+                            {% else %}
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold">
+                                {{ business.business_name[0] }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ business.business_name }}</h4>
+                                <p class="text-sm text-gray-600">{{ business.tagline }}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/business/{{ business.slug }}" class="px-3 py-1 text-sm text-purple-600 hover:text-purple-800">View</a>
+                            <a href="/dashboard/business/{{ business.id }}/edit" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800">Edit</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-600 mb-4">No businesses yet. Create your first business listing!</p>
+                        <a href="/dashboard/business/new" class="px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+                            Add Business
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if profile %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-4">
+                            {% if user.profile_picture_url %}
+                            <img src="{{ user.profile_picture_url }}" alt="{{ profile.full_name }}" class="w-12 h-12 rounded-full">
+                            {% else %}
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold">
+                                {{ profile.full_name[0] }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ profile.full_name }}</h4>
+                                <p class="text-sm text-gray-600">{{ profile.headline }}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/profile/{{ profile.slug }}" class="px-3 py-1 text-sm text-purple-600 hover:text-purple-800">View</a>
+                            <a href="/dashboard/profile/edit" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800">Edit</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 border border-gray-200 rounded-lg">
+                        <p class="text-gray-600 mb-4">No professional profile yet. Create your profile!</p>
+                        <a href="/dashboard/profile/edit" class="px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+                            Create Profile
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Featured Businesses -->
+            {% if featured_businesses %}
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Featured Businesses</h3>
+                <div class="space-y-4">
+                    {% for business in featured_businesses %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-4">
+                            {% if business.logo_url %}
+                            <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-12 h-12 rounded-lg">
+                            {% else %}
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold">
+                                {{ business.business_name[0] }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ business.business_name }}</h4>
+                                <p class="text-sm text-gray-600">{{ business.tagline }}</p>
+                                {% if business.location %}
+                                <p class="text-xs text-gray-500">{{ business.location }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <a href="/business/{{ business.slug }}" class="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition inline-block">
+                                View Details →
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Recent Activity</h3>
+                {% if recent_activity %}
+                <div class="space-y-3">
+                    {% for activity in recent_activity %}
+                    <div class="p-3 border-l-4 border-purple-600 bg-purple-50 rounded">
+                        <p class="text-sm text-gray-700">{{ activity }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <p class="text-gray-600">No recent activity yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Profile Completion -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Profile Completion</h3>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>{{ profile_completion }}% Complete</span>
+                        <span>{{ profile_completion }}/100</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ profile_completion }}%"></div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    {% for item in completion_items %}
+                    <div class="flex items-center gap-2 text-sm">
+                        {% if item.complete %}
+                        <span class="text-green-500">✓</span>
+                        <span class="text-gray-600 line-through">{{ item.name }}</span>
+                        {% else %}
+                        <span class="text-gray-400">○</span>
+                        <span class="text-gray-600">{{ item.name }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Suggested Connections -->
+            {% if suggested_users %}
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Suggested Connections</h3>
+                <div class="space-y-4">
+                    {% for suggested in suggested_users %}
+                    <div class="flex items-center gap-3">
+                        {% if suggested.profile_picture_url %}
+                        <img src="{{ suggested.profile_picture_url }}" alt="{{ suggested.display_name }}" class="w-10 h-10 rounded-full">
+                        {% else %}
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold">
+                            {{ suggested.display_name[0] }}
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">{{ suggested.display_name }}</p>
+                            <p class="text-sm text-gray-600">{{ suggested.email }}</p>
+                        </div>
+                        {% if suggested.professional_profile %}
+                        <a href="/profile/{{ suggested.professional_profile.slug }}" class="text-purple-600 hover:text-purple-800 text-sm">
+                            View →
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}{% if profile %}Edit{% else %}Create{% endif %} Professional Profile - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">
+        {% if profile %}Edit{% else %}Create{% endif %} Professional Profile
+    </h1>
+    
+    <form 
+        method="post" 
+        enctype="multipart/form-data" 
+        action="/dashboard/profile"
+        class="bg-white rounded-xl shadow-md p-8 space-y-6"
+    >
+        <!-- Personal Info -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Personal Information</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Full Name <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="full_name" 
+                        required
+                        value="{{ profile.full_name if profile else user.display_name }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        maxlength="100"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Headline (Job Title/Role) <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="headline" 
+                        required
+                        value="{{ profile.headline if profile else '' }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        maxlength="100"
+                        placeholder="e.g., Senior Software Engineer"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Bio (Elevator Pitch) <span class="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                        name="bio" 
+                        required
+                        rows="4"
+                        maxlength="300"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="A short bio describing yourself (300 characters max)"
+                    >{{ profile.bio if profile else '' }}</textarea>
+                    <p class="text-sm text-gray-500 mt-1">Maximum 300 characters</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Profile Summary
+                    </label>
+                    <textarea 
+                        name="profile_summary" 
+                        rows="8"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="A longer summary of your background, experience, and expertise..."
+                    >{{ profile.profile_summary if profile else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Professional Details -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Professional Details</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Skills <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="skills" 
+                        required
+                        value="{% if profile and profile.skills %}{{ profile.skills|join(', ') }}{% endif %}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="Python, JavaScript, React, etc. (comma-separated, max 20)"
+                    >
+                    <p class="text-sm text-gray-500 mt-1">Separate skills with commas (at least 1, max 20)</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        LinkedIn URL <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="url" 
+                        name="linkedin_url" 
+                        required
+                        value="{{ profile.linkedin_url if profile else '' }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="https://linkedin.com/in/yourprofile"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Portfolio/Website URL
+                    </label>
+                    <input 
+                        type="url" 
+                        name="portfolio_url" 
+                        value="{{ profile.portfolio_url if profile else '' }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="https://yourportfolio.com"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Availability Status <span class="text-red-500">*</span>
+                    </label>
+                    <select 
+                        name="availability_status" 
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    >
+                        <option value="Available" {% if profile and (profile.availability_status_value == "Available" or (profile.availability_status and profile.availability_status.value == "Available")) %}selected{% endif %}>Available</option>
+                        <option value="Busy" {% if profile and (profile.availability_status_value == "Busy" or (profile.availability_status and profile.availability_status.value == "Busy")) %}selected{% endif %}>Busy</option>
+                        <option value="Not Looking" {% if profile and (profile.availability_status_value == "Not Looking" or (profile.availability_status and profile.availability_status.value == "Not Looking")) %}selected{% endif %}>Not Looking</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        How I Can Help
+                    </label>
+                    <textarea 
+                        name="how_i_can_help" 
+                        rows="6"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        placeholder="Describe how you can help others (mentorship, collaboration, consulting, etc.)"
+                    >{{ profile.how_i_can_help if profile else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Media & Privacy -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Media & Privacy</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Profile Picture
+                    </label>
+                    {% if user.profile_picture_url %}
+                    <div class="mb-2">
+                        <img src="{{ user.profile_picture_url }}" alt="Current profile picture" class="w-24 h-24 rounded-full">
+                        <p class="text-sm text-gray-500 mt-1">Current profile picture</p>
+                    </div>
+                    {% endif %}
+                    <input 
+                        type="file" 
+                        name="profile_picture" 
+                        accept="image/jpeg,image/png,image/webp"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    >
+                    <p class="text-sm text-gray-500 mt-1">JPG, PNG, or WebP (max 5MB). If not provided, your OAuth profile picture will be used.</p>
+                </div>
+                
+                <!-- Privacy Settings -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-gray-800">Privacy Settings</h3>
+                    <label class="flex items-center gap-3">
+                        <input 
+                            type="checkbox" 
+                            name="consent_show_contact" 
+                            {% if profile and profile.consent_show_contact %}checked{% endif %}
+                            class="w-5 h-5 text-purple-600 rounded focus:ring-purple-600"
+                        >
+                        <span class="text-gray-700">Show my contact email to other members</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                        <input 
+                            type="checkbox" 
+                            name="consent_show_linkedin" 
+                            {% if profile and profile.consent_show_linkedin or not profile %}checked{% endif %}
+                            class="w-5 h-5 text-purple-600 rounded focus:ring-purple-600"
+                        >
+                        <span class="text-gray-700">Display my LinkedIn profile publicly</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex gap-4 pt-6 border-t border-gray-200">
+            <button 
+                type="submit" 
+                class="flex-1 px-6 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition font-semibold"
+            >
+                {% if profile %}Update{% else %}Create{% endif %} Profile
+            </button>
+            <a 
+                href="/dashboard" 
+                class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+                Cancel
+            </a>
+            {% if profile %}
+            <form method="post" action="/dashboard/profile/delete" class="inline">
+                <button 
+                    type="submit" 
+                    onclick="return confirm('Are you sure you want to delete your profile? This cannot be undone.')"
+                    class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                    Delete
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <div class="text-9xl font-bold text-red-200 mb-4">500</div>
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Server Error</h1>
+    <p class="text-gray-600 text-lg mb-8">
+        Something went wrong on our end. We're working on fixing it.
+    </p>
+    <div class="flex gap-4 justify-center">
+        <a href="/" class="px-6 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+            Go Home
+        </a>
+        <button onclick="window.location.reload()" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            Try Again
+        </button>
+    </div>
+</div>
+{% endblock %}
+

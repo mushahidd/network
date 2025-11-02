@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <div class="text-9xl font-bold text-purple-200 mb-4">404</div>
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Page Not Found</h1>
+    <p class="text-gray-600 text-lg mb-8">
+        The page you're looking for doesn't exist or has been moved.
+    </p>
+    <div class="flex gap-4 justify-center">
+        <a href="/" class="px-6 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition">
+            Go Home
+        </a>
+        <a href="/businesses" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            Browse Businesses
+        </a>
+    </div>
+</div>
+{% endblock %}
+

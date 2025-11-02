@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}{{ business.business_name }} - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Hero Section -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        {% if business.cover_image_url %}
+        <div class="h-64 bg-cover bg-center" style="background-image: url('{{ business.cover_image_url }}')"></div>
+        {% else %}
+        <div class="h-64 gradient-bg"></div>
+        {% endif %}
+        <div class="p-8">
+            <div class="flex items-start gap-6">
+                {% if business.logo_url %}
+                <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-32 h-32 rounded-xl bg-white p-2 shadow-md -mt-20">
+                {% endif %}
+                <div class="flex-1">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ business.business_name }}</h1>
+                    <p class="text-xl text-gray-600 mb-4">{{ business.tagline }}</p>
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full">{{ business.category }}</span>
+                        <span class="text-gray-600">{{ business.location }}</span>
+                        {% if business.view_count %}
+                        <span class="text-gray-500 text-sm">{{ business.view_count }} views</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if user and user.id == business.user_id %}
+                    <div class="mt-4 flex gap-3">
+                        <a 
+                            href="/dashboard/business/{{ business.id }}/edit" 
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                        >
+                            Edit Business
+                        </a>
+                        <form method="post" action="/dashboard/business/{{ business.id }}/delete" class="inline" onsubmit="return confirm('Are you sure you want to delete this business? This action cannot be undone. All associated images and data will be permanently deleted.');">
+                            <button 
+                                type="submit" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                            >
+                                Delete Business
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Description -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">About</h2>
+                <p class="text-gray-600 whitespace-pre-wrap">{{ business.description }}</p>
+            </div>
+            
+            <!-- Industry Tags -->
+            {% if business.industry_tags %}
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Industry Tags</h2>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in business.industry_tags %}
+                    <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Contact Info -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Contact Information</h2>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-sm text-gray-500">Email</span>
+                        <a href="mailto:{{ business.contact_email }}" class="block text-purple-600 hover:text-purple-800">{{ business.contact_email }}</a>
+                    </div>
+                    {% if business.contact_phone %}
+                    <div>
+                        <span class="text-sm text-gray-500">Phone</span>
+                        <a href="tel:{{ business.contact_phone }}" class="block text-purple-600 hover:text-purple-800">{{ business.contact_phone }}</a>
+                    </div>
+                    {% endif %}
+                    {% if business.website_url %}
+                    <div>
+                        <span class="text-sm text-gray-500">Website</span>
+                        <a href="{{ business.website_url }}" target="_blank" class="block text-purple-600 hover:text-purple-800">{{ business.website_url }}</a>
+                    </div>
+                    {% endif %}
+                    {% if business.linkedin_url %}
+                    <div>
+                        <span class="text-sm text-gray-500">LinkedIn</span>
+                        <a href="{{ business.linkedin_url }}" target="_blank" class="block text-purple-600 hover:text-purple-800">View LinkedIn</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <a 
+                    href="mailto:{{ business.contact_email }}" 
+                    class="mt-4 w-full block text-center px-4 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition"
+                >
+                    Contact Business
+                </a>
+            </div>
+            
+            <!-- Owner Info -->
+            {% if business.owner %}
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Business Owner</h2>
+                <div class="flex items-center gap-3">
+                    {% if business.owner.profile_picture_url %}
+                    <img src="{{ business.owner.profile_picture_url }}" alt="{{ business.owner.display_name }}" class="w-12 h-12 rounded-full">
+                    {% else %}
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold">
+                        {{ business.owner.display_name[0] }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <p class="font-medium text-gray-800">{{ business.owner.display_name }}</p>
+                    {% if business.owner and business.owner.professional_profile %}
+                    <a href="/profile/{{ business.owner.professional_profile.slug }}" class="text-sm text-purple-600 hover:text-purple-800">
+                        View Profile →
+                    </a>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Related Businesses -->
+    {% if related_businesses %}
+    <div class="mt-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Related Businesses</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for related in related_businesses %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                {% if related.cover_image_url %}
+                <div class="h-32 bg-cover bg-center" style="background-image: url('{{ related.cover_image_url }}')"></div>
+                {% else %}
+                <div class="h-32 gradient-bg"></div>
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ related.business_name }}</h3>
+                    <p class="text-gray-600 mb-3">{{ related.tagline }}</p>
+                    <a href="/business/{{ related.slug }}" class="text-purple-600 hover:text-purple-800 font-medium">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

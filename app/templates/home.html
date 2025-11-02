@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}ConnectHub - Your Community, Your Network, Your Growth{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-bg text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {% if user %}
+        <h2 class="text-5xl font-bold mb-6">Welcome back, {{ user.display_name }}!</h2>
+        <p class="text-xl mb-8 text-purple-100">Continue building your network and discovering new opportunities.</p>
+        <div class="flex justify-center space-x-4">
+            <a href="/dashboard" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                Go to Dashboard
+            </a>
+            <a href="/businesses" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                Explore Businesses
+            </a>
+        </div>
+        {% else %}
+        <h2 class="text-5xl font-bold mb-6">Your Community, Your Network, Your Growth</h2>
+        <p class="text-xl mb-8 text-purple-100">Connect with local businesses and professionals. Build meaningful relationships. Grow together.</p>
+        <div class="flex justify-center">
+            <a href="/auth/login?register=true" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-12 py-4 rounded-lg font-bold hover:from-yellow-500 hover:to-orange-600 transition shadow-xl text-lg">
+                Get Started
+            </a>
+        </div>
+        <p class="mt-6 text-purple-200 text-sm">
+            <span class="font-semibold">Free to join</span> • No credit card required • Start connecting in seconds
+        </p>
+        {% endif %}
+        <div class="mt-12 grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+            <div class="text-center">
+                <div class="text-4xl font-bold">{{ stats.businesses }}{% if stats.businesses > 0 %}+{% endif %}</div>
+                <div class="text-purple-200">Active Businesses</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold">{{ stats.professionals }}{% if stats.professionals > 0 %}+{% endif %}</div>
+                <div class="text-purple-200">Professionals</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold">{{ stats.connections }}{% if stats.connections > 0 %}+{% endif %}</div>
+                <div class="text-purple-200">Users Registered</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" placeholder="Search businesses, professionals, skills..." 
+                       class="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-base">
+            </div>
+            <select class="px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 bg-white text-gray-700 font-medium text-base cursor-pointer hover:border-gray-400 transition min-w-[200px]">
+                <option value="">All Categories</option>
+                <option value="Technology">Technology</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Finance">Finance</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+            </select>
+            <button class="px-8 py-4 gradient-bg text-white rounded-lg hover:opacity-90 transition font-semibold whitespace-nowrap">
+                Search
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Businesses -->
+<section id="businesses" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Featured Businesses</h2>
+        {% if featured_businesses %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for business in featured_businesses %}
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                {% if business.logo_url %}
+                <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-16 h-16 rounded-lg mb-4">
+                {% else %}
+                <div class="w-16 h-16 bg-purple-100 rounded-lg mb-4 flex items-center justify-center">
+                    <span class="text-2xl">🏢</span>
+                </div>
+                {% endif %}
+                <h3 class="text-xl font-bold text-gray-800 mb-2">{{ business.business_name }}</h3>
+                <p class="text-gray-600 mb-4">{{ business.tagline }}</p>
+                {% if business.slug %}
+                <a href="/business/{{ business.slug }}" class="text-purple-600 hover:text-purple-800 font-medium">View Details →</a>
+                {% else %}
+                <span class="text-gray-400 text-sm">No details available</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No featured businesses yet. Check back soon!</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Featured Professionals -->
+<section id="professionals" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Featured Professionals</h2>
+        {% if featured_professionals %}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {% for professional in featured_professionals %}
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                    {{ professional.full_name[0] }}
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ professional.full_name }}</h3>
+                <p class="text-sm text-gray-600 mb-3">{{ professional.headline }}</p>
+                {% if professional.slug %}
+                <a href="/profile/{{ professional.slug }}" class="text-purple-600 hover:text-purple-800 text-sm font-medium">View Profile →</a>
+                {% else %}
+                <span class="text-gray-400 text-xs">Profile unavailable</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No featured professionals yet. Check back soon!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

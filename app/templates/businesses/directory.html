@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Business Directory - ConnectHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">Business Directory</h1>
+    
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <form method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search businesses..." 
+                    value="{{ search or '' }}"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                >
+            </div>
+            <select 
+                name="category" 
+                class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+            >
+                <option value="">All Categories</option>
+                <option value="Technology" {% if category == "Technology" %}selected{% endif %}>Technology</option>
+                <option value="Marketing" {% if category == "Marketing" %}selected{% endif %}>Marketing</option>
+                <option value="Finance" {% if category == "Finance" %}selected{% endif %}>Finance</option>
+                <option value="Healthcare" {% if category == "Healthcare" %}selected{% endif %}>Healthcare</option>
+                <option value="Education" {% if category == "Education" %}selected{% endif %}>Education</option>
+                <option value="Other" {% if category == "Other" %}selected{% endif %}>Other</option>
+            </select>
+            <button 
+                type="submit" 
+                class="px-6 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition"
+            >
+                Search
+            </button>
+        </form>
+        
+        {% if user %}
+        <div class="mt-4">
+            <a 
+                href="/dashboard/business/new" 
+                class="text-purple-600 hover:text-purple-800 font-medium"
+            >
+                + Add Your Business
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Results -->
+    <div class="mb-4">
+        <p class="text-gray-600">{{ total }} business{{ 'es' if total != 1 else '' }} found</p>
+    </div>
+    
+    {% if businesses %}
+    <!-- Business Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for business in businesses %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+            {% if business.cover_image_url %}
+            <div class="h-32 bg-cover bg-center" style="background-image: url('{{ business.cover_image_url }}')"></div>
+            {% else %}
+            <div class="h-32 gradient-bg"></div>
+            {% endif %}
+            <div class="p-6">
+                {% if business.logo_url %}
+                <img src="{{ business.logo_url }}" alt="{{ business.business_name }}" class="w-16 h-16 rounded-lg mb-4 -mt-12 bg-white p-2">
+                {% endif %}
+                <h3 class="text-xl font-bold text-gray-800 mb-2">{{ business.business_name }}</h3>
+                <p class="text-gray-600 mb-3">{{ business.tagline }}</p>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">{{ business.category_value or (business.category.value if business.category else 'Other') }}</span>
+                    <span class="text-sm text-gray-500">{{ business.location or 'No location' }}</span>
+                </div>
+                <a 
+                    href="/business/{{ business.slug }}" 
+                    class="text-purple-600 hover:text-purple-800 font-medium inline-block"
+                >
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="flex justify-center gap-2">
+        {% if page > 1 %}
+        <a 
+            href="?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            Previous
+        </a>
+        {% endif %}
+        
+        {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ p }}</span>
+        {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+        <a 
+            href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            {{ p }}
+        </a>
+        {% elif p == page - 3 or p == page + 3 %}
+        <span class="px-4 py-2">...</span>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page < total_pages %}
+        <a 
+            href="?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+            Next
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="bg-white rounded-xl shadow-md p-12 text-center">
+        <p class="text-gray-600 text-lg mb-4">No businesses found.</p>
+        {% if user %}
+        <a href="/dashboard/business/new" class="text-purple-600 hover:text-purple-800 font-medium">
+            Add the first business →
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
