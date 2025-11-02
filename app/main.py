@@ -266,3 +266,28 @@ async def log_startup_info():
 async def health_check():
     return {"status": "ok"}
 
+
+"""
+Run ConnectHub FastAPI application
+Handles dynamic PORT from Railway environment
+"""
+import os
+import uvicorn
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8080))  # Railway sets $PORT automatically
+    host = "0.0.0.0"  # Must be 0.0.0.0 for container deployment
+    print("="*60)
+    print(f"🚀 Starting ConnectHub server at http://{host}:{port}")
+    print("="*60)
+    
+    uvicorn.run(
+        "app.main:app",
+        host=host,
+        port=port,
+        reload=False,
+        log_level="info"
+    )
+
+
+
