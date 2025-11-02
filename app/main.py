@@ -294,6 +294,19 @@ async def debug_redirect_uri():
     from app.config import settings
     return {"redirect_uri": f"{settings.BASE_URL}/auth/google/callback"}
 
+@router.get("/google/login")
+async def login_google(request: Request):
+    redirect_uri = request.url_for("auth_callback")
+    return await oauth.google.authorize_redirect(request, str(redirect_uri))
+
+@router.get("/auth/google/callback")
+async def auth_callback(request: Request):
+    token = await oauth.google.authorize_access_token(request)
+    user = token.get("userinfo")
+    # Handle user authentication
+    return RedirectResponse(url="/dashboard")
+
+
 
 
 
