@@ -8,6 +8,9 @@ import os
 class Settings:
     """Application settings"""
     
+    DATABASE_URL: str = os.getenv("postgresql+asyncpg://postgres:omxOiQGApOFrxjRRpFeuIFbGbSdZPTiA@postgres.railway.internal:5432/railway")
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() in ["true", "1"]
+    
     # App
     APP_NAME: str = "ConnectHub"
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
@@ -58,4 +61,5 @@ def reload_settings():
 
 
 settings = get_settings()
+
 
