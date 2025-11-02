@@ -261,3 +261,8 @@ async def log_startup_info():
 # Note: The root "/" route is handled by home.router
 # All other routes are organized by feature area and registered above
 # Route order is critical - more specific routes must come before generic ones
+
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "ok"}
+
