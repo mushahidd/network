@@ -276,7 +276,7 @@ import uvicorn
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8080))
+    port = int(os.getenv("PORT", "8080"))  # Default to 8080 if PORT is not set
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
@@ -300,6 +300,7 @@ async def auth_callback(request: Request):
     user = token.get("userinfo")
     # Handle user authentication
     return RedirectResponse(url="/dashboard")
+
 
 
 
